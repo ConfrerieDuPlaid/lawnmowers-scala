@@ -1,0 +1,3 @@
+package progfun object InputParser {
+
+}
