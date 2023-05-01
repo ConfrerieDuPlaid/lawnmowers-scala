@@ -1,3 +1,5 @@
-package progfun class SetUp {
+package progfun
+
+final case class SetUp(field: Field) {
 
 }
