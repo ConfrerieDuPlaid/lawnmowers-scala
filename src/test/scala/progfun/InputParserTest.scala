@@ -14,8 +14,9 @@ class InputParserTest extends AnyFunSuite with EitherValues with Matchers {
     "AADAADADDA"
   )
 
-  private val badSetUp = SetUp(
-    Field.default()
+  private val defaultSetUp = SetUp(
+    Field.default(),
+    List.empty
   )
 
   test("empty input should be left") {
@@ -26,20 +27,34 @@ class InputParserTest extends AnyFunSuite with EitherValues with Matchers {
 
   test("should get limits of the field") {
     val setUp = InputParser.fromLines(defaultInput)
-    val field = setUp.getOrElse(badSetUp).field
-    assert(field.width === 4)
-    assert(field.height === 5)
+    val field = setUp.getOrElse(defaultSetUp).field
+    assert(field.width === 5)
+    assert(field.height === 6)
   }
 
   test("should get left when limits are not separated by a space") {
     val e = InputParser.fromLines(defaultInput.updated(0, "54")).left.value
-    e shouldBe a[DonneesIncorrectesException]
-    e.getMessage should be("54 is not parsable to field limit.")
+    e shouldBe a [DonneesIncorrectesException]
+    e.getMessage should be ("54 is not parsable to field limit.")
   }
 
   test("should get left when limits are not ints") {
     val e = InputParser.fromLines(defaultInput.updated(0, "5 A")).left.value
     e shouldBe a [DonneesIncorrectesException]
     e.getMessage should be ("5 A is not parsable to field limit.")
+  }
+
+  test("should parse lawnmowers start position") {
+    val setUp = InputParser.fromLines(defaultInput)
+    val lawnMowers = setUp.getOrElse(defaultSetUp).lawnMowers
+    assert(lawnMowers(0).start.position.equals(Position(1,2)))
+    assert(lawnMowers(1).start.position.equals(Position(3,3)))
+  }
+
+  test("should parse lawnmowers start orientations") {
+    val setUp = InputParser.fromLines(defaultInput)
+    val lawnMowers = setUp.getOrElse(defaultSetUp).lawnMowers
+    assert(lawnMowers(0).start.orientation.equals(North))
+    assert(lawnMowers(1).start.orientation.equals(East))
   }
 }

@@ -1,7 +1,8 @@
 package progfun
 
-final case class Field private(height: Int, width: Int) {}
+final case class Field private (height: Int, width: Int) {}
 
+// TODO rename to LawnSurface
 object Field {
   def apply(height: Int, width: Int): Either[DonneesIncorrectesException, Field] = {
     if(height > 0 && width > 0) Right(new Field(height, width))
