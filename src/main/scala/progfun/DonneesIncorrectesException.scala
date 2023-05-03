@@ -3,6 +3,8 @@ package progfun
 final case class DonneesIncorrectesException (private val message: String) extends Exception(message) {}
 
 object DonneesIncorrectesException {
+  def unkownInstruction(instruction: Char) = new DonneesIncorrectesException(s"[${instruction.toString}] is not an instruction. Accepted values are (G,D,A).")
+
   def orientationNotParsable(orientation: String) = new DonneesIncorrectesException(s"[$orientation] is not an orientation. Accepted values are (N,E,W,S).")
 
   def positionNotParsable(x: String, y: String) = new DonneesIncorrectesException(s"[$x,$y] not parsable to a position.")

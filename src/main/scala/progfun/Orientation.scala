@@ -1,8 +1,6 @@
 package progfun
 
-sealed trait Orientation {
-}
-
+sealed trait Orientation
 case object North extends Orientation {
 
 }

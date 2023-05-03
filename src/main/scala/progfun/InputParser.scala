@@ -4,11 +4,11 @@ import scala.annotation.tailrec
 import scala.util.{Failure, Success, Try}
 
 object InputParser {
-  def fromLines(lines: List[String]): Either[DonneesIncorrectesException,SetUp] = {
+  def fromLines(lines: List[String]): Either[DonneesIncorrectesException,Input] = {
     for {
       field <- fieldFromOptionString(lines.headOption)
       lawnMowers <- lawnMowersFrom(lines.drop(1))
-    } yield SetUp(field, lawnMowers)
+    } yield Input(field, lawnMowers)
   }
 
   private def fieldFromOptionString(input: Option[String]): Either[DonneesIncorrectesException,Field] = {
@@ -36,38 +36,29 @@ object InputParser {
   private def lawnMowersFrom(lines: List[String]): Either[DonneesIncorrectesException, List[LawnMowerInput]] = {
     @tailrec
     def helper(lines: List[String], lawnmowers: List[LawnMowerInput]): Either[DonneesIncorrectesException, List[LawnMowerInput]] = {
-      if(lines.isEmpty) Right(lawnmowers)
-      else {
-        twoFirstLinesOf(lines) match {
-          case Some(twoLines) => {
-            oneLawnMowerFrom(startPositionAndOrientationString = twoLines._1) match {
-              case Right(lawnmower) => helper(lines.drop(2), lawnmowers.appended(lawnmower))
-              case Left(e) => Left(e)
-            }
+      lines match {
+        case positionAndOrientation :: instructions :: _ => {
+          oneLawnMowerFrom(positionAndOrientation, instructions) match {
+            case Right(lawnmower) => helper(lines.drop(2), lawnmowers.appended(lawnmower))
+            case Left(e) => Left(e)
           }
-          case _ => Left(DonneesIncorrectesException.missingLine())
         }
+        case Nil => Right(lawnmowers)
+        case _ => Left(DonneesIncorrectesException.missingLine())
       }
     }
 
     helper(lines, List.empty)
   }
 
-  private def twoFirstLinesOf(lines: List[String]): Option[(String, String)] = {
-    lines match {
-      case firstLine :: secondLine :: _ => Some((firstLine, secondLine))
-      case _ => None
-    }
-  }
-
-  private def oneLawnMowerFrom(startPositionAndOrientationString: String): Either[DonneesIncorrectesException, LawnMowerInput] = {
+  private def oneLawnMowerFrom(startPositionAndOrientationString: String, instructionsString: String): Either[DonneesIncorrectesException, LawnMowerInput] = {
     for {
-      positionAndOrientation <- startPositionAndOrientation(startPositionAndOrientationString)
-      // TODO Instructions instructionsString
-    } yield LawnMowerInput(Start(position = positionAndOrientation._1, orientation = positionAndOrientation._2))
+      positionAndOrientation <- positionAndOrientationFrom(startPositionAndOrientationString)
+      instructions <- instructionsFrom(instructionsString)
+    } yield LawnMowerInput(position = positionAndOrientation._1, orientation = positionAndOrientation._2, instructions = instructions)
   }
 
-  private def startPositionAndOrientation(startPositionAndOrientationString: String): Either[DonneesIncorrectesException, (Position, Orientation)] = {
+  private def positionAndOrientationFrom(startPositionAndOrientationString: String): Either[DonneesIncorrectesException, (Position, Orientation)] = {
     startPositionAndOrientationString match {
       case s"$x $y $orientation" => {
         for {
@@ -93,6 +84,29 @@ object InputParser {
       case "W" => Right(West)
       case "S" => Right(South)
       case _ => Left(DonneesIncorrectesException.orientationNotParsable(orientation))
+    }
+  }
+
+  private def instructionsFrom(instructionsString: String): Either[DonneesIncorrectesException, List[Instruction]] = {
+    @tailrec
+    def helper(chars: List[Char], instructions: List[Instruction]): Either[DonneesIncorrectesException, List[Instruction]] = {
+      chars match {
+        case char :: _ => oneInstructionFrom(char) match {
+          case Right(instruction) => helper(chars.drop(1), instructions.appended(instruction))
+          case Left(e) => Left(e)
+        }
+        case Nil => Right(instructions)
+      }
+    }
+    helper(instructionsString.toCharArray.toList, List.empty)
+  }
+
+  private def oneInstructionFrom(char: Char): Either[DonneesIncorrectesException, Instruction] = {
+    char match {
+      case 'G' => Right(RotateLeft)
+      case 'D' => Right(RotateRight)
+      case 'A' => Right(MoveForward)
+      case _ => Left(DonneesIncorrectesException.unkownInstruction(char))
     }
   }
 }
