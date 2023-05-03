@@ -5,10 +5,14 @@ import scala.util.{Failure, Success, Try}
 
 object InputParser {
   def fromLines(lines: List[String]): Either[DonneesIncorrectesException,Input] = {
-    for {
+    case class LawnAndMowers(lawn: Lawn, lawnmowers: List[LawnMowerInput])
+
+    val lawnAndMowers = for {
       field <- lawnFromOptionString(lines.headOption)
       lawnMowers <- lawnMowersFrom(lines.drop(1))
-    } yield Input(field, lawnMowers)
+    } yield LawnAndMowers(field, lawnMowers)
+
+    lawnAndMowers.flatMap(lawnAndMowers => Input(lawnAndMowers.lawn, lawnAndMowers.lawnmowers))
   }
 
   private def lawnFromOptionString(input: Option[String]): Either[DonneesIncorrectesException,Lawn] = {

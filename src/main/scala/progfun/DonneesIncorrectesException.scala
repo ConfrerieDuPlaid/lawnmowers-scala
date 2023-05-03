@@ -3,6 +3,11 @@ package progfun
 final case class DonneesIncorrectesException (private val message: String) extends Exception(message) {}
 
 object DonneesIncorrectesException {
+  def lawnmowerStartOutsideLawn(mower: LawnMowerInput) = {
+    val p = mower.position
+    new DonneesIncorrectesException(s"Lawnmower with start position (${p.x.toString},${p.y.toString}) is outside lawn.")
+  }
+
   def unknownInstruction(instruction: Char) = new DonneesIncorrectesException(s"[${instruction.toString}] is not an instruction. Accepted values are (G,D,A).")
 
   def orientationNotParsable(orientation: String) = new DonneesIncorrectesException(s"[$orientation] is not an orientation. Accepted values are (N,E,W,S).")
