@@ -1,3 +1,3 @@
 package progfun
 
-final case class Input(field: Field, lawnMowers: List[LawnMowerInput])
+final case class Input(lawn: Lawn, lawnMowers: List[LawnMowerInput])

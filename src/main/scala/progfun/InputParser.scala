@@ -6,33 +6,32 @@ import scala.util.{Failure, Success, Try}
 object InputParser {
   def fromLines(lines: List[String]): Either[DonneesIncorrectesException,Input] = {
     for {
-      field <- fieldFromOptionString(lines.headOption)
+      field <- lawnFromOptionString(lines.headOption)
       lawnMowers <- lawnMowersFrom(lines.drop(1))
     } yield Input(field, lawnMowers)
   }
 
-  private def fieldFromOptionString(input: Option[String]): Either[DonneesIncorrectesException,Field] = {
+  private def lawnFromOptionString(input: Option[String]): Either[DonneesIncorrectesException,Lawn] = {
     input match {
-      case Some(string) => fieldFrom(string)
+      case Some(string) => lawnFrom(string)
       case _ => Left(DonneesIncorrectesException.emptyInput())
     }
   }
 
-  private def fieldFrom(string: String): Either[DonneesIncorrectesException, Field] = {
-    limitCornerPositionFrom(string) match {
-      case Some(position) => Field(height = position._1 + 1, width = position._2 + 1)
+  private def lawnFrom(string: String): Either[DonneesIncorrectesException, Lawn] = {
+    limitCornerCoordinatesFrom(string) match {
+      case Some(coordinate) => Lawn(height = coordinate._1 + 1, width = coordinate._2 + 1)
       case _ => Left(DonneesIncorrectesException.fieldNotParsable(string))
     }
   }
 
-  private def limitCornerPositionFrom(str: String): Option[(Int, Int)] = {
+  private def limitCornerCoordinatesFrom(str: String): Option[(Int, Int)] = {
     str match {
       case s"$width $height" => Try((height.toInt, width.toInt)).toOption
       case _ => None
     }
   }
 
-  // TODO Refactor
   private def lawnMowersFrom(lines: List[String]): Either[DonneesIncorrectesException, List[LawnMowerInput]] = {
     @tailrec
     def helper(lines: List[String], lawnmowers: List[LawnMowerInput]): Either[DonneesIncorrectesException, List[LawnMowerInput]] = {
@@ -40,7 +39,7 @@ object InputParser {
         case positionAndOrientation :: instructions :: _ => {
           oneLawnMowerFrom(positionAndOrientation, instructions) match {
             case Right(lawnmower) => helper(lines.drop(2), lawnmowers.appended(lawnmower))
-            case Left(e) => Left(e)
+            case Left(e) => Left(e) // cannot use flatmap because of @tailrec
           }
         }
         case Nil => Right(lawnmowers)
@@ -93,7 +92,7 @@ object InputParser {
       chars match {
         case char :: _ => oneInstructionFrom(char) match {
           case Right(instruction) => helper(chars.drop(1), instructions.appended(instruction))
-          case Left(e) => Left(e)
+          case Left(e) => Left(e) // cannot use flatmap because of @tailrec
         }
         case Nil => Right(instructions)
       }
@@ -106,7 +105,7 @@ object InputParser {
       case 'G' => Right(RotateLeft)
       case 'D' => Right(RotateRight)
       case 'A' => Right(MoveForward)
-      case _ => Left(DonneesIncorrectesException.unkownInstruction(char))
+      case _ => Left(DonneesIncorrectesException.unknownInstruction(char))
     }
   }
 }

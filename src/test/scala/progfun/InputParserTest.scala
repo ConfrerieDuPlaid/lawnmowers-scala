@@ -6,17 +6,20 @@ import org.scalatest.matchers.should.Matchers
 
 class InputParserTest extends AnyFunSuite with EitherValues with Matchers {
 
+  @SuppressWarnings(Array("org.wartremover.warts.Throw"))
+  private def getInputOrElseThrow(either: Either[Exception, Input]): Input = {
+    either match {
+      case Right(input) => input
+      case Left(exception) => throw exception
+    }
+  }
+
   private val defaultInputLines = List(
     "4 5",
     "1 2 N",
     "GAGAGAGAA",
     "3 3 E",
     "AADAADADDA"
-  )
-
-  private val defaultInput = Input(
-    Field.default(),
-    List.empty
   )
 
   test("empty input should be left") {
@@ -26,13 +29,9 @@ class InputParserTest extends AnyFunSuite with EitherValues with Matchers {
   }
 
   test("should get limits of the field") {
-    InputParser.fromLines(defaultInputLines) match {
-      case Right(setUp) => {
-        assert(setUp.field.width === 5)
-        assert(setUp.field.height === 6)
-      }
-      case Left(e) => assert(e.getMessage === "")
-    }
+    val input = getInputOrElseThrow(InputParser.fromLines(defaultInputLines))
+    assert(input.lawn.width === 5)
+    assert(input.lawn.height === 6)
   }
 
   test("should get left when limits are not separated by a space") {
@@ -48,8 +47,7 @@ class InputParserTest extends AnyFunSuite with EitherValues with Matchers {
   }
 
   test("should parse lawnmowers start position") {
-    val setUp = InputParser.fromLines(defaultInputLines)
-    val lawnMowers = setUp.getOrElse(defaultInput).lawnMowers
+    val lawnMowers = getInputOrElseThrow(InputParser.fromLines(defaultInputLines)).lawnMowers
     assert(lawnMowers(0).position.equals(Position(1,2)))
     assert(lawnMowers(1).position.equals(Position(3,3)))
   }
@@ -61,8 +59,8 @@ class InputParserTest extends AnyFunSuite with EitherValues with Matchers {
       "4 5 S",
       "A"
     ))
-    val setUp = InputParser.fromLines(fourOrientations)
-    val lawnMowers = setUp.getOrElse(defaultInput).lawnMowers
+
+    val lawnMowers = getInputOrElseThrow(InputParser.fromLines(fourOrientations)).lawnMowers
     assert(lawnMowers(0).orientation.equals(North))
     assert(lawnMowers(1).orientation.equals(East))
     assert(lawnMowers(2).orientation.equals(West))
@@ -93,16 +91,24 @@ class InputParserTest extends AnyFunSuite with EitherValues with Matchers {
     e.getMessage should be("[1,B] not parsable to a position.")
   }
 
-  test("should parse lawnmowers instructions") {
-    val setUp = InputParser.fromLines(defaultInputLines)
-    val lawnMowers = setUp.getOrElse(defaultInput).lawnMowers
-    val expected = List(RotateLeft, MoveForward, RotateLeft, MoveForward, RotateLeft, MoveForward, RotateLeft, MoveForward, MoveForward)
-    lawnMowers(0).instructions shouldBe expected
+  test("should parse first lawnmower instructions") {
+    val lawnMowers = getInputOrElseThrow(InputParser.fromLines(defaultInputLines)).lawnMowers
+    lawnMowers(0).instructions shouldBe List(RotateLeft, MoveForward, RotateLeft, MoveForward, RotateLeft, MoveForward, RotateLeft, MoveForward, MoveForward)
+  }
+
+  test("should parse second lawnmower instructions") {
+    val lawnMowers = getInputOrElseThrow(InputParser.fromLines(defaultInputLines)).lawnMowers
+    lawnMowers(1).instructions shouldBe List(MoveForward, MoveForward, RotateRight, MoveForward, MoveForward, RotateRight, MoveForward, RotateRight, RotateRight, MoveForward)
   }
 
   test("should get left with unknown instruction") {
     val e = InputParser.fromLines(defaultInputLines.updated(2, "AGZB")).left.value
     e shouldBe a[DonneesIncorrectesException]
     e.getMessage should be("[Z] is not an instruction. Accepted values are (G,D,A).")
+  }
+
+  test("should get empty list of lawnmowers") {
+    val lawnmowers = getInputOrElseThrow(InputParser.fromLines(List("4 5"))).lawnMowers
+    lawnmowers shouldBe List.empty
   }
 }

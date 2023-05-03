@@ -3,7 +3,7 @@ package progfun
 final case class DonneesIncorrectesException (private val message: String) extends Exception(message) {}
 
 object DonneesIncorrectesException {
-  def unkownInstruction(instruction: Char) = new DonneesIncorrectesException(s"[${instruction.toString}] is not an instruction. Accepted values are (G,D,A).")
+  def unknownInstruction(instruction: Char) = new DonneesIncorrectesException(s"[${instruction.toString}] is not an instruction. Accepted values are (G,D,A).")
 
   def orientationNotParsable(orientation: String) = new DonneesIncorrectesException(s"[$orientation] is not an orientation. Accepted values are (N,E,W,S).")
 
@@ -13,7 +13,7 @@ object DonneesIncorrectesException {
   def missingLine() = new DonneesIncorrectesException(
     "Missing line. Each lawnmower should be defined by a first line for the start position and orientation, and a second line for the instructions."
   )
-  def negativeLimits(height: Int, width: Int) = new DonneesIncorrectesException(s"Fields limits must be strictly positive. Given = [height=${height.toString}, width=${width.toString}].")
+  def negativeLimits(height: Int, width: Int) = new DonneesIncorrectesException(s"Lawn's limits must be strictly positive. Given = [height=${height.toString}, width=${width.toString}].")
   def fieldNotParsable(input: String) = new DonneesIncorrectesException(s"$input is not parsable to field limit.")
   def emptyInput() = new DonneesIncorrectesException("Empty Input.")
 
