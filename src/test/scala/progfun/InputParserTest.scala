@@ -26,10 +26,13 @@ class InputParserTest extends AnyFunSuite with EitherValues with Matchers {
   }
 
   test("should get limits of the field") {
-    val setUp = InputParser.fromLines(defaultInput)
-    val field = setUp.getOrElse(defaultSetUp).field
-    assert(field.width === 5)
-    assert(field.height === 6)
+    InputParser.fromLines(defaultInput) match {
+      case Right(setUp) => {
+        assert(setUp.field.width === 5)
+        assert(setUp.field.height === 6)
+      }
+      case Left(e) => assert(e.getMessage === "")
+    }
   }
 
   test("should get left when limits are not separated by a space") {
@@ -52,9 +55,41 @@ class InputParserTest extends AnyFunSuite with EitherValues with Matchers {
   }
 
   test("should parse lawnmowers start orientations") {
-    val setUp = InputParser.fromLines(defaultInput)
+    val fourOrientations = defaultInput.concat(List(
+      "2 3 W",
+      "G",
+      "4 5 S",
+      "A"
+    ))
+    val setUp = InputParser.fromLines(fourOrientations)
     val lawnMowers = setUp.getOrElse(defaultSetUp).lawnMowers
     assert(lawnMowers(0).start.orientation.equals(North))
     assert(lawnMowers(1).start.orientation.equals(East))
+    assert(lawnMowers(2).start.orientation.equals(West))
+    assert(lawnMowers(3).start.orientation.equals(South))
+  }
+
+  test("should get left with invalid orientation") {
+    val e = InputParser.fromLines(defaultInput.updated(1, "1 2 A")).left.value
+    e shouldBe a[DonneesIncorrectesException]
+    e.getMessage should be("[A] is not an orientation. Accepted values are (N,E,W,S).")
+  }
+
+  test("should get left with missing last line") {
+    val e = InputParser.fromLines(defaultInput.dropRight(1)).left.value
+    e shouldBe a[DonneesIncorrectesException]
+    e.getMessage should be("Missing line. Each lawnmower should be defined by a first line for the start position and orientation, and a second line for the instructions.")
+  }
+
+  test("should get left with mal formatted line") {
+    val e = InputParser.fromLines(defaultInput.updated(1, "12N")).left.value
+    e shouldBe a[DonneesIncorrectesException]
+    e.getMessage should be("12N is not parsable to position and orientation. Expected format like 'x y z'.")
+  }
+
+  test("should get left with non integer values for position") {
+    val e = InputParser.fromLines(defaultInput.updated(1, "1 B N")).left.value
+    e shouldBe a[DonneesIncorrectesException]
+    e.getMessage should be("[1,B] not parsable to a position.")
   }
 }

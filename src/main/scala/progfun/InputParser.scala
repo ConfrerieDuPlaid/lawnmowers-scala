@@ -1,5 +1,6 @@
 package progfun
 
+import scala.annotation.tailrec
 import scala.util.{Failure, Success, Try}
 
 object InputParser {
@@ -31,21 +32,25 @@ object InputParser {
     }
   }
 
+  // TODO Refactor
   private def lawnMowersFrom(lines: List[String]): Either[DonneesIncorrectesException, List[LawnMowerInput]] = {
-    val first = twoFirstLinesOf(lines) match {
-      case Some(lines) => oneLawnMowerFrom(startPositionAndOrientationString = lines._1)
-      case _ => Left(DonneesIncorrectesException.missingLine())
+    @tailrec
+    def helper(lines: List[String], lawnmowers: List[LawnMowerInput]): Either[DonneesIncorrectesException, List[LawnMowerInput]] = {
+      if(lines.isEmpty) Right(lawnmowers)
+      else {
+        twoFirstLinesOf(lines) match {
+          case Some(twoLines) => {
+            oneLawnMowerFrom(startPositionAndOrientationString = twoLines._1) match {
+              case Right(lawnmower) => helper(lines.drop(2), lawnmowers.appended(lawnmower))
+              case Left(e) => Left(e)
+            }
+          }
+          case _ => Left(DonneesIncorrectesException.missingLine())
+        }
+      }
     }
 
-    val second = twoFirstLinesOf(lines.drop(2)) match {
-      case Some(lines) => oneLawnMowerFrom(startPositionAndOrientationString = lines._1)
-      case _ => Left(DonneesIncorrectesException.missingLine())
-    }
-
-    for {
-      f <- first
-      s <- second
-    } yield List(f,s)
+    helper(lines, List.empty)
   }
 
   private def twoFirstLinesOf(lines: List[String]): Option[(String, String)] = {
