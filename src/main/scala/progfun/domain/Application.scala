@@ -3,17 +3,17 @@ package progfun.domain
 import progfun.domain.models.{Instruction, Lawn, Lawnmower}
 import progfun.domain.ports.DonneesIncorrectesException
 import progfun.domain.ports.in.{MowLawnCommand, MowLawnService, MowerWithInstructions}
-import progfun.domain.ports.out.{LawnMowedResult, MowerResult}
+import progfun.domain.ports.out.{LawnMowedResult, MowerResult, Writer}
 
 import scala.annotation.tailrec
 
-final class Application extends MowLawnService{
+final class Application(writer: Writer) extends MowLawnService{
 
   override def mowLawn(command: MowLawnCommand): Either[DonneesIncorrectesException, LawnMowedResult] = {
     val lawn = command.lawn
     val results = command.mowers.map(lawnmower => mowAndGetResult(lawn, lawnmower))
 
-    Right(LawnMowedResult(command.lawn, results))
+    writer.write(LawnMowedResult(command.lawn, results))
   }
 
 

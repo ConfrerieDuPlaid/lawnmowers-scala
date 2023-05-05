@@ -1,5 +1,7 @@
 package progfun.domain.ports.out
 
-trait Writer {
+import progfun.domain.ports.DonneesIncorrectesException
 
+trait Writer {
+  def write(lawnMowedResult: LawnMowedResult): Either[DonneesIncorrectesException, LawnMowedResult]
 }

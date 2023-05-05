@@ -1,13 +1,18 @@
 package progfun.domain
 
 import org.scalatest.funsuite.AnyFunSuite
-import progfun.domain.models.{Lawn, Lawnmower, MoveForward, North, Position}
+import progfun.domain.models.{East, Lawn, Lawnmower, MoveForward, North, Position, RotateLeft, RotateRight}
 import progfun.domain.ports.DonneesIncorrectesException
 import progfun.domain.ports.in.{MowLawnCommand, MowerWithInstructions}
-import progfun.domain.ports.out.{LawnMowedResult, MowerResult}
+import progfun.domain.ports.out.{LawnMowedResult, MowerResult, Writer}
 
 class ApplicationTest extends AnyFunSuite {
   private val lawn = Lawn(3,3).getOrElse(Lawn.default())
+  private val bigLawn = Lawn(5,6).getOrElse(Lawn.default())
+
+  object MockWriter extends Writer {
+    override def write(lawnMowedResult: LawnMowedResult): Either[DonneesIncorrectesException, LawnMowedResult] = Right(lawnMowedResult)
+  }
 
   @SuppressWarnings(Array("org.wartremover.warts.Throw"))
   private def getCommandOrThrow(e: Either[DonneesIncorrectesException, MowLawnCommand]): MowLawnCommand = {
@@ -17,7 +22,8 @@ class ApplicationTest extends AnyFunSuite {
     }
   }
 
-  private val application = new Application()
+  private val mockWriter = MockWriter
+  private val application = new Application(mockWriter)
 
   //  . . .       . . .
   //  . . .   =>  ^ . .
@@ -86,7 +92,7 @@ class ApplicationTest extends AnyFunSuite {
   //  . ^ .   =>  ^ . .
   //  ^ . .       . . .
   test("application should mow lawn with two mowers") {
-    val forward = List(MoveForward);
+    val forward = List(MoveForward)
     val command = getCommandOrThrow(MowLawnCommand(
       lawn,
       List(
@@ -107,6 +113,58 @@ class ApplicationTest extends AnyFunSuite {
           start = Lawnmower(Position(1, 1), North),
           instructions = forward,
           end = Lawnmower(Position(1, 2), North)
+        )
+      )
+    ))) {
+      application.mowLawn(command)
+    }
+  }
+
+  test("application should mow lawn with two mowers complex command") {
+    val firstMowerInstructions = List(
+      RotateLeft,
+      MoveForward,
+      RotateLeft,
+      MoveForward,
+      RotateLeft,
+      MoveForward,
+      RotateLeft,
+      MoveForward,
+      MoveForward
+    )
+
+    val secondMowerInstructions = List(
+      MoveForward,
+      MoveForward,
+      RotateRight,
+      MoveForward,
+      MoveForward,
+      RotateRight,
+      MoveForward,
+      RotateRight,
+      RotateRight,
+      MoveForward
+    )
+    val command = getCommandOrThrow(MowLawnCommand(
+      bigLawn,
+      List(
+        MowerWithInstructions(Lawnmower(Position(1, 2), North), firstMowerInstructions),
+        MowerWithInstructions(Lawnmower(Position(3, 3), East), secondMowerInstructions)
+      )
+    ))
+
+    assertResult(Right(LawnMowedResult(
+      bigLawn,
+      List(
+        MowerResult(
+          start = Lawnmower(Position(1, 2), North),
+          instructions = firstMowerInstructions,
+          end = Lawnmower(Position(1, 3), North)
+        ),
+        MowerResult(
+          start = Lawnmower(Position(3, 3), East),
+          instructions = secondMowerInstructions,
+          end = Lawnmower(Position(5, 1), East)
         )
       )
     ))) {
