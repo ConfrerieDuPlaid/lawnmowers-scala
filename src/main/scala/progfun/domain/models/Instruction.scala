@@ -5,8 +5,23 @@ package progfun.domain.models
  * So List(RotateLeft, MoveForward) result to a compilation error Inferred type containing Product
  * -> https://www.baeldung.com/scala/product-with-serializable
  */
-sealed trait Instruction extends Product with Serializable
+sealed trait Instruction extends Product with Serializable {
+  def execute(mower: Lawnmower): Lawnmower
+}
 
-case object RotateLeft extends Instruction {}
-case object RotateRight extends Instruction {}
-case object MoveForward extends Instruction {}
+case object RotateLeft extends Instruction {
+  override def execute(mower: Lawnmower): Lawnmower = {
+    mower
+  }
+}
+case object RotateRight extends Instruction {
+  override def execute(mower: Lawnmower): Lawnmower = {
+    mower
+  }
+}
+case object MoveForward extends Instruction {
+  override def execute(mower: Lawnmower): Lawnmower = {
+    val oldPosition = mower.position
+    mower.copy(position = oldPosition.copy(y = oldPosition.y + 1))
+  }
+}

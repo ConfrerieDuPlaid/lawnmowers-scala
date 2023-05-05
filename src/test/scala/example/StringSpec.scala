@@ -8,8 +8,6 @@ class StringSpec extends AnyFunSuite {
     assert("" == "")
   }
 
-  test("Chaine ") {
-    
-  }
+  test("Chaine ") {}
 
 }
