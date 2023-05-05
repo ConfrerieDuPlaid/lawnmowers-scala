@@ -1,11 +1,15 @@
-package progfun
+package progfun.in
+
+import progfun.domain.models.{East, Instruction, Lawn, MoveForward, North, Orientation, Position, RotateLeft, RotateRight, South, West, Lawnmower}
+import progfun.domain.ports.DonneesIncorrectesException
+import progfun.domain.ports.in.{Input, MowerWithInstructions}
 
 import scala.annotation.tailrec
 import scala.util.{Failure, Success, Try}
 
 object InputParser {
   def fromLines(lines: List[String]): Either[DonneesIncorrectesException,Input] = {
-    case class LawnAndMowers(lawn: Lawn, lawnmowers: List[LawnMowerInput])
+    case class LawnAndMowers(lawn: Lawn, lawnmowers: List[MowerWithInstructions])
 
     val lawnAndMowers = for {
       field <- lawnFromOptionString(lines.headOption)
@@ -36,9 +40,9 @@ object InputParser {
     }
   }
 
-  private def lawnMowersFrom(lines: List[String]): Either[DonneesIncorrectesException, List[LawnMowerInput]] = {
+  private def lawnMowersFrom(lines: List[String]): Either[DonneesIncorrectesException, List[MowerWithInstructions]] = {
     @tailrec
-    def helper(lines: List[String], lawnmowers: List[LawnMowerInput]): Either[DonneesIncorrectesException, List[LawnMowerInput]] = {
+    def helper(lines: List[String], lawnmowers: List[MowerWithInstructions]): Either[DonneesIncorrectesException, List[MowerWithInstructions]] = {
       lines match {
         case positionAndOrientation :: instructions :: _ => {
           oneLawnMowerFrom(positionAndOrientation, instructions) match {
@@ -54,11 +58,11 @@ object InputParser {
     helper(lines, List.empty)
   }
 
-  private def oneLawnMowerFrom(startPositionAndOrientationString: String, instructionsString: String): Either[DonneesIncorrectesException, LawnMowerInput] = {
+  private def oneLawnMowerFrom(startPositionAndOrientationString: String, instructionsString: String): Either[DonneesIncorrectesException, MowerWithInstructions] = {
     for {
-      positionAndOrientation <- positionAndOrientationFrom(startPositionAndOrientationString)
+      pAndO <- positionAndOrientationFrom(startPositionAndOrientationString)
       instructions <- instructionsFrom(instructionsString)
-    } yield LawnMowerInput(position = positionAndOrientation._1, orientation = positionAndOrientation._2, instructions = instructions)
+    } yield MowerWithInstructions(Lawnmower(position = pAndO._1, orientation = pAndO._2), instructions = instructions)
   }
 
   private def positionAndOrientationFrom(startPositionAndOrientationString: String): Either[DonneesIncorrectesException, (Position, Orientation)] = {

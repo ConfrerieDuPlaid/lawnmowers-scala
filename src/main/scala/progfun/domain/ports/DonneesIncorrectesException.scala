@@ -1,11 +1,14 @@
-package progfun
+package progfun.domain.ports
 
-final case class DonneesIncorrectesException (private val message: String) extends Exception(message) {}
+import progfun.domain.models.Lawnmower
+
+final case class DonneesIncorrectesException private (private val message: String) extends Exception(message) {}
 
 object DonneesIncorrectesException {
-  def inputFileNotFound(path: String) = new DonneesIncorrectesException(s"[$path] not found")
 
-  def lawnmowerStartOutsideLawn(mower: LawnMowerInput) = {
+  def inputFileNotFound(path: String) = new DonneesIncorrectesException(s"[$path] not found.")
+
+  def lawnmowerStartOutsideLawn(mower: Lawnmower) = {
     val p = mower.position
     new DonneesIncorrectesException(s"Lawnmower with start position (${p.x.toString},${p.y.toString}) is outside lawn.")
   }

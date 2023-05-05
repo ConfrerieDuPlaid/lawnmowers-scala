@@ -1,4 +1,4 @@
-package progfun
+package progfun.domain.models
 
 /**
  * Scala 2 compiler is not able to infer the correct type

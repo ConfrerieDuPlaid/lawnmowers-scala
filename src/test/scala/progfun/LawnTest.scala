@@ -3,6 +3,8 @@ package progfun
 import org.scalatest.EitherValues
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
+import progfun.domain.models.{Lawn, Position}
+import progfun.domain.ports.DonneesIncorrectesException
 
 class LawnTest extends AnyFunSuite with EitherValues with Matchers{
   test("default lawn should be 1x1") {

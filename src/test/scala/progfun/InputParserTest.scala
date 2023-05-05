@@ -3,6 +3,10 @@ package progfun
 import org.scalatest.EitherValues
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
+import progfun.domain.models.{East, MoveForward, North, Position, RotateLeft, RotateRight, South, West}
+import progfun.domain.ports.DonneesIncorrectesException
+import progfun.domain.ports.in.Input
+import progfun.in.InputParser
 
 class InputParserTest extends AnyFunSuite with EitherValues with Matchers {
 
@@ -47,7 +51,7 @@ class InputParserTest extends AnyFunSuite with EitherValues with Matchers {
   }
 
   test("should parse lawnmowers start position") {
-    val lawnMowers = getInputOrElseThrow(InputParser.fromLines(defaultInputLines)).lawnMowers
+    val lawnMowers = getInputOrElseThrow(InputParser.fromLines(defaultInputLines)).lawnMowers.map(l => l.mower)
     assert(lawnMowers(0).position.equals(Position(1,2)))
     assert(lawnMowers(1).position.equals(Position(3,3)))
   }
@@ -60,11 +64,15 @@ class InputParserTest extends AnyFunSuite with EitherValues with Matchers {
       "A"
     ))
 
-    val lawnMowers = getInputOrElseThrow(InputParser.fromLines(fourOrientations)).lawnMowers
-    assert(lawnMowers(0).orientation.equals(North))
-    assert(lawnMowers(1).orientation.equals(East))
-    assert(lawnMowers(2).orientation.equals(West))
-    assert(lawnMowers(3).orientation.equals(South))
+    val lawnMowers = getInputOrElseThrow(InputParser.fromLines(fourOrientations)).lawnMowers.map(l => l.mower)
+    assertResult((North, East, West, South)) {
+      (
+        lawnMowers(0).orientation,
+        lawnMowers(1).orientation,
+        lawnMowers(2).orientation,
+        lawnMowers(3).orientation
+      )
+    }
   }
 
   test("should get left with invalid orientation") {

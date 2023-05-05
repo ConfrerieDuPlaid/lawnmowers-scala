@@ -1,4 +1,4 @@
-package progfun
+package progfun.domain.models
 
 sealed trait Orientation
 case object North extends Orientation {

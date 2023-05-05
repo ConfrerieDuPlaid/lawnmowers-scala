@@ -1,4 +1,6 @@
-package progfun
+package progfun.domain.models
+
+import progfun.domain.ports.DonneesIncorrectesException
 
 final case class Lawn private(height: Int, width: Int) {
   def containsPosition(position: Position): Boolean = {
