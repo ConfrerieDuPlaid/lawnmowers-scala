@@ -7,6 +7,8 @@ final case class DonneesIncorrectesException private (
 ) extends Exception(message) {}
 
 object DonneesIncorrectesException {
+  def writingError(): DonneesIncorrectesException = new DonneesIncorrectesException("writing error")
+
 
   def inputFileNotFound(path: String) =
     new DonneesIncorrectesException(s"[$path] not found.")
