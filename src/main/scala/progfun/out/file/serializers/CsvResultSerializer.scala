@@ -1,10 +1,10 @@
-package progfun.out.file
+package progfun.out.file.serializers
 import progfun.domain.models.{East, Instruction, MoveForward, North, Orientation, RotateLeft, RotateRight, South, West}
 import progfun.domain.ports.out.{LawnMowedResult, MowerResult}
 
 import scala.annotation.tailrec
 
-object CsvResultSerializer extends ResultSerializer {
+object CsvResultSerializer extends Serializer[LawnMowedResult] {
   override def serialize(lawnMowedResult: LawnMowedResult): String = {
     val columns = "numéro;début_x;début_y;début_direction;fin_x;fin_y;fin_direction;instructions"
     val lines = columns :: lawnmowers(lawnMowedResult.mowers)

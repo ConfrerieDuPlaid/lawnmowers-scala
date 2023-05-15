@@ -1,8 +1,9 @@
-package progfun.out.file
+package progfun.out.file.serializers
 import progfun.domain.models.{East, Instruction, MoveForward, North, Orientation, RotateLeft, RotateRight, South, West}
 import progfun.domain.ports.out.{LawnMowedResult, MowerResult}
+import progfun.out.file.serializers.Serializer
 
-case object JsonResultSerializer extends ResultSerializer {
+case object JsonResultSerializer extends Serializer[LawnMowedResult] {
   override def serialize(lawnMowedResult: LawnMowedResult): String = {
     val lawn = lawnMowedResult.lawn
     val (x,y) = (lawn.width - 1, lawn.height - 1)

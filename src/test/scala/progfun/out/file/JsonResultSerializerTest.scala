@@ -3,6 +3,7 @@ package progfun.out.file
 import org.scalatest.funsuite.AnyFunSuite
 import progfun.domain.models.{East, Lawn, Lawnmower, MoveForward, North, Position, RotateLeft, RotateRight}
 import progfun.domain.ports.out.{LawnMowedResult, MowerResult}
+import progfun.out.file.serializers.JsonResultSerializer
 
 class JsonResultSerializerTest extends AnyFunSuite {
 
