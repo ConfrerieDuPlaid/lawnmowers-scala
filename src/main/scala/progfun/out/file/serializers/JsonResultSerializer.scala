@@ -1,16 +1,13 @@
 package progfun.out.file.serializers
-import progfun.domain.models.{East, Instruction, MoveForward, North, Orientation, RotateLeft, RotateRight, South, West}
+import progfun.domain.models.{East, Instruction, MoveForward, North, Orientation, Position, RotateLeft, RotateRight, South, West}
 import progfun.domain.ports.out.{LawnMowedResult, MowerResult}
 
 class JsonResultSerializer extends JsonSerializer[LawnMowedResult] {
   override def serialize(lawnMowedResult: LawnMowedResult): String = {
     val lawn = lawnMowedResult.lawn
-    val (x,y) = (lawn.width - 1, lawn.height - 1)
+    val limit = Position(lawn.width - 1, lawn.height - 1)
     s"""{
-       |  "limite": {
-       |    "x": ${x.toString},
-       |    "y": ${y.toString}
-       |  },
+       |  "limite": ${position(limit, 2)},
        |  "tondeuses": ${lawnmowers(lawnMowedResult.mowers)}
        |}""".stripMargin
   }
@@ -28,21 +25,26 @@ class JsonResultSerializer extends JsonSerializer[LawnMowedResult] {
     val end = result.end
     s"""    {
       |      "debut": {
-      |        "point": {
-      |          "x": ${start.position.x.toString},
-      |          "y": ${start.position.y.toString}
-      |        },
+      |        "point": ${position(start.position, 8)},
       |        "direction": "${orientation(result.start.orientation)}"
       |      },
       |      "instructions": ${instructions(result.instructions)},
       |      "fin": {
-      |        "point": {
-      |          "x": ${end.position.x.toString},
-      |          "y": ${end.position.y.toString}
-      |        },
+      |        "point": ${position(end.position, 8)},
       |        "direction": "${orientation(end.orientation)}"
       |      }
       |    }""".stripMargin
+  }
+
+  private def position(position: Position, indent: Int): String = {
+    s"""{
+       |${indentation(indent+2)}"x": ${position.x.toString},
+       |${indentation(indent+2)}"y": ${position.y.toString}
+       |${indentation(indent)}}""".stripMargin
+  }
+
+  private def indentation(space: Int): String = {
+    List.fill(space)(" ").mkString
   }
 
   private def orientation(orientation: Orientation): String = {
