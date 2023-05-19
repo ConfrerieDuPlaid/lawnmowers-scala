@@ -1,6 +1,4 @@
-package progfun.domain.ports.in
-
-import progfun.domain.models.{Instruction, Lawnmower}
+package progfun.domain.models
 final case class MowerWithInstructions(
                                         lawnmower: Lawnmower,
                                         instructions: List[Instruction]

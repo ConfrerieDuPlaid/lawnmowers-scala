@@ -3,8 +3,9 @@ package progfun.domain.port.in
 import org.scalatest.EitherValues
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
-import progfun.domain.models.{Lawn, Lawnmower, North, Position}
-import progfun.domain.ports.in.{MowLawnCommand, MowerWithInstructions}
+import progfun.domain.models
+import progfun.domain.models.{Lawn, Lawnmower, MowerWithInstructions, North, Position}
+import progfun.domain.ports.in.MowLawnCommand
 import progfun.domain.ports.{DonneesIncorrectesException, in}
 
 class MowLawnCommandTest extends AnyFunSuite with EitherValues with Matchers {
@@ -26,7 +27,7 @@ class MowLawnCommandTest extends AnyFunSuite with EitherValues with Matchers {
     assert(input.lawn === Lawn.default())
     assert(
       input.mowers === List(
-        in.MowerWithInstructions(Lawnmower(Position(0, 0), North), List.empty)
+        MowerWithInstructions(Lawnmower(Position(0, 0), North), List.empty)
       )
     )
   }
@@ -35,7 +36,7 @@ class MowLawnCommandTest extends AnyFunSuite with EitherValues with Matchers {
     val e = MowLawnCommand(
       Lawn.default(),
       List(
-        in.MowerWithInstructions(Lawnmower(Position(0, 2), North), List.empty)
+        models.MowerWithInstructions(Lawnmower(Position(0, 2), North), List.empty)
       )
     ).left.value
     e shouldBe a[DonneesIncorrectesException]

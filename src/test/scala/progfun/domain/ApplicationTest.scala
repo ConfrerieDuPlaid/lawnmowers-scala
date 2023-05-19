@@ -1,9 +1,9 @@
 package progfun.domain
 
 import org.scalatest.funsuite.AnyFunSuite
-import progfun.domain.models.{East, Lawn, Lawnmower, MoveForward, North, Position, RotateLeft, RotateRight}
+import progfun.domain.models.{East, Lawn, Lawnmower, MoveForward, MowerWithInstructions, North, Position, RotateLeft, RotateRight}
 import progfun.domain.ports.DonneesIncorrectesException
-import progfun.domain.ports.in.{MowLawnCommand, MowerWithInstructions}
+import progfun.domain.ports.in.MowLawnCommand
 import progfun.domain.ports.out.{LawnMowedResult, MowerResult, Writer}
 
 class ApplicationTest extends AnyFunSuite {

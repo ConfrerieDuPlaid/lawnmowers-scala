@@ -1,21 +1,8 @@
 package progfun.in
 
-import progfun.domain.models.{
-  East,
-  Instruction,
-  Lawn,
-  Lawnmower,
-  MoveForward,
-  North,
-  Orientation,
-  Position,
-  RotateLeft,
-  RotateRight,
-  South,
-  West
-}
+import progfun.domain.models.{East, Instruction, Lawn, Lawnmower, MoveForward, MowerWithInstructions, North, Orientation, Position, RotateLeft, RotateRight, South, West}
 import progfun.domain.ports.DonneesIncorrectesException
-import progfun.domain.ports.in.{MowLawnCommand, MowerWithInstructions}
+import progfun.domain.ports.in.MowLawnCommand
 
 import scala.annotation.tailrec
 import scala.util.{Failure, Success, Try}

@@ -1,8 +1,8 @@
 package progfun.domain
 
-import progfun.domain.models.{Instruction, Lawn, Lawnmower}
+import progfun.domain.models.{Instruction, Lawn, Lawnmower, MowerWithInstructions}
 import progfun.domain.ports.DonneesIncorrectesException
-import progfun.domain.ports.in.{MowLawnCommand, MowLawnService, MowerWithInstructions}
+import progfun.domain.ports.in.{MowLawnCommand, MowLawnService}
 import progfun.domain.ports.out.{LawnMowedResult, MowerResult, Writer}
 
 import scala.annotation.tailrec

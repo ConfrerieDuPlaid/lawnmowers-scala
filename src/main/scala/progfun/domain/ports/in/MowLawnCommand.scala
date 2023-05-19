@@ -1,6 +1,6 @@
 package progfun.domain.ports.in
 
-import progfun.domain.models.Lawn
+import progfun.domain.models.{Lawn, MowerWithInstructions}
 import progfun.domain.ports.DonneesIncorrectesException
 
 final case class MowLawnCommand private(lawn: Lawn, mowers: List[MowerWithInstructions])
