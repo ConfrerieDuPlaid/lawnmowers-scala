@@ -4,7 +4,7 @@ import progfun.domain.ports.out.{LawnMowedResult, MowerResult}
 
 import scala.annotation.tailrec
 
-object CsvResultSerializer extends Serializer[LawnMowedResult] {
+class CsvResultSerializer extends CsvSerializer[LawnMowedResult] {
   override def serialize(lawnMowedResult: LawnMowedResult): String = {
     val columns = "numéro;début_x;début_y;début_direction;fin_x;fin_y;fin_direction;instructions"
     val lines = columns :: lawnmowers(lawnMowedResult.mowers)

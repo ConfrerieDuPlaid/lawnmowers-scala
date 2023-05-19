@@ -1,4 +1,2 @@
 package progfun.out.file.serializers
-class JsonSerializer {
-
-}
+trait JsonSerializer[A] extends Serializer[A]

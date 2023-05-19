@@ -7,6 +7,8 @@ import progfun.out.file.serializers.JsonResultSerializer
 
 class JsonResultSerializerTest extends AnyFunSuite {
 
+  private val jsonResultSerializer = new JsonResultSerializer()
+
   @SuppressWarnings(Array("org.wartremover.warts.Throw"))
   private def getLawnOf(height: Int, width: Int): Lawn = {
     Lawn(height, width) match {
@@ -23,7 +25,7 @@ class JsonResultSerializerTest extends AnyFunSuite {
                    |  },
                    |  "tondeuses": []
                    |}""".stripMargin) {
-      JsonResultSerializer.serialize(
+      jsonResultSerializer.serialize(
         LawnMowedResult(
           getLawnOf(height = 6, width = 6),
           List.empty
@@ -41,7 +43,7 @@ class JsonResultSerializerTest extends AnyFunSuite {
         |  },
         |  "tondeuses": []
         |}""".stripMargin) {
-      JsonResultSerializer.serialize(
+      jsonResultSerializer.serialize(
         LawnMowedResult(
           getLawnOf(height = 2, width = 8),
           List.empty
@@ -77,7 +79,7 @@ class JsonResultSerializerTest extends AnyFunSuite {
         |    }
         |  ]
         |}""".stripMargin) {
-      JsonResultSerializer.serialize(
+      jsonResultSerializer.serialize(
         LawnMowedResult(
           getLawnOf(height = 6, width = 6),
           List(
@@ -136,7 +138,7 @@ class JsonResultSerializerTest extends AnyFunSuite {
         |    }
         |  ]
         |}""".stripMargin) {
-      JsonResultSerializer.serialize(
+      jsonResultSerializer.serialize(
         LawnMowedResult(
           getLawnOf(height = 6, width = 6),
           List(

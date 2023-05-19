@@ -6,6 +6,8 @@ import progfun.domain.ports.out.{LawnMowedResult, MowerResult}
 import progfun.out.file.serializers.CsvResultSerializer
 
 class CsvResultSerializerTest extends AnyFunSuite{
+
+  private val csvResultSerializer = new CsvResultSerializer()
   @SuppressWarnings(Array("org.wartremover.warts.Throw"))
   private def getLawnOf(lawn: Either[Exception, Lawn]): Lawn = {
     lawn match {
@@ -16,7 +18,7 @@ class CsvResultSerializerTest extends AnyFunSuite{
 
   test("should serialize columns of csv") {
     assertResult("numéro;début_x;début_y;début_direction;fin_x;fin_y;fin_direction;instructions") {
-      CsvResultSerializer.serialize(
+      csvResultSerializer.serialize(
         LawnMowedResult(
           getLawnOf(Lawn(6,6)),
           List.empty
@@ -29,7 +31,7 @@ class CsvResultSerializerTest extends AnyFunSuite{
     assertResult(
       """numéro;début_x;début_y;début_direction;fin_x;fin_y;fin_direction;instructions
         |1;1;2;N;1;3;N;GAD""".stripMargin) {
-      CsvResultSerializer.serialize(
+      csvResultSerializer.serialize(
         LawnMowedResult(
           getLawnOf(Lawn(6, 6)),
           List(MowerResult(
@@ -47,7 +49,7 @@ class CsvResultSerializerTest extends AnyFunSuite{
       """numéro;début_x;début_y;début_direction;fin_x;fin_y;fin_direction;instructions
         |1;1;2;N;1;3;N;GAD
         |2;3;3;E;5;1;E;AGD""".stripMargin) {
-      CsvResultSerializer.serialize(
+      csvResultSerializer.serialize(
         LawnMowedResult(
           getLawnOf(Lawn(6, 6)),
           List(
