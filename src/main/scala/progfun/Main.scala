@@ -18,13 +18,13 @@ object Main extends App {
       }
 
       val writer = configuration.output match {
-        case FileConfigOutput(_, format) => {
+        case FileConfigOutput(file, format) => {
           val serializer = format match {
             case JSON => new JsonResultSerializer()
             case CSV => new CsvResultSerializer()
             case YAML => new YamlResultSerializer()
           }
-          new FileWriter(serializer);
+          new FileWriter(serializer, file);
         }
       }
 
