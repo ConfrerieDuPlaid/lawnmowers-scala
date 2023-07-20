@@ -6,7 +6,7 @@ import org.scalatest.matchers.should.Matchers
 import progfun.domain.models
 import progfun.domain.models.{Lawn, Lawnmower, MowerWithInstructions, North, Position}
 import progfun.domain.ports.in.MowLawnCommand
-import progfun.domain.ports.{DonneesIncorrectesException, in}
+import progfun.domain.ports.DonneesIncorrectesException
 
 class MowLawnCommandTest extends AnyFunSuite with EitherValues with Matchers {
 

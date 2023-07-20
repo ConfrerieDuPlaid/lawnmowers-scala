@@ -8,6 +8,10 @@ class FileWriter(serializer: Serializer[LawnMowedResult]) extends Writer{
   override def write(lawnMowedResult: LawnMowedResult): Either[DonneesIncorrectesException, LawnMowedResult] = {
     val serialized = serializer.serialize(lawnMowedResult)
     if(serialized.isEmpty) Left(DonneesIncorrectesException.writingError())
-    else Right(lawnMowedResult)
+    else {
+      // TODO write in file
+      print(serialized)
+      Right(lawnMowedResult)
+    }
   }
 }

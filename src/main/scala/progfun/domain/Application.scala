@@ -16,7 +16,6 @@ final class Application(writer: Writer) extends MowLawnService{
     writer.write(LawnMowedResult(command.lawn, results))
   }
 
-
   @tailrec
   private def mow(lawn: Lawn, lawnmower: Lawnmower, instructions: List[Instruction]): Lawnmower = {
     instructions match {

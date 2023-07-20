@@ -7,11 +7,21 @@ final case class DonneesIncorrectesException private (
 ) extends Exception(message) {}
 
 object DonneesIncorrectesException {
+  def missingConfiguration(configName: String) = new DonneesIncorrectesException(s"Configuration [$configName] is missing.")
+
+  def unkownOutputFileFormat(value: String) = new DonneesIncorrectesException(s"Format [$value] is not a supported output format.")
+
+
+  def unkownOutputMode(value: String) = new DonneesIncorrectesException(s"Unknown input mode [$value].")
+
+  def unkownInputMode(value: String) = new DonneesIncorrectesException(s"Unknown input mode [$value].")
+
   def writingError(): DonneesIncorrectesException = new DonneesIncorrectesException("writing error")
 
 
-  def inputFileNotFound(path: String) =
-    new DonneesIncorrectesException(s"[$path] not found.")
+  def inputFileNotFound(path: String) = new DonneesIncorrectesException(s"Input [$path] not found.")
+
+  def outputFileNotFound(path: String) = new DonneesIncorrectesException(s"Output [$path] not found.")
 
   def lawnmowerStartOutsideLawn(mower: Lawnmower) = {
     val p = mower.position
