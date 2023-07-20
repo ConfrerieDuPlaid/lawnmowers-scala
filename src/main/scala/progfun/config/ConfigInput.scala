@@ -5,3 +5,4 @@ import better.files.File
 sealed trait ConfigInput
 
 case class FileConfigInput(file: File) extends ConfigInput
+case class CliConfigInput() extends ConfigInput

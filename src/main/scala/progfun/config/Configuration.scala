@@ -16,19 +16,26 @@ object Configuration {
       case Success(value) => Right(value)
     }
   }
+
+  def cliOutput(config: Config): Either[DonneesIncorrectesException, ConfigOutput] = {
+    outputFormat(config).flatMap(format => Right(CliConfigOutput(format)))
+  }
+
   def apply(config: Config): Either[DonneesIncorrectesException, Configuration] = {
 
     val input: Either[DonneesIncorrectesException, ConfigInput] = getConfigValue(config, "app.input_mode").flatMap(inputMode => {
-      inputMode match {
-        case "file" => fileInput(config)
+      inputMode.toUpperCase.trim match {
+        case "FILE" => fileInput(config)
+        case "CLI" => Right(CliConfigInput())
         case _ => Left(DonneesIncorrectesException.unkownInputMode(inputMode))
       }
     })
 
 
     val output: Either[DonneesIncorrectesException, ConfigOutput] = getConfigValue(config, "app.output_mode").flatMap(outputMode => {
-      outputMode match {
-        case "file" => fileOutput(config)
+      outputMode.toUpperCase.trim match {
+        case "FILE" => fileOutput(config)
+        case "CLI" => cliOutput(config)
         case _ => Left(DonneesIncorrectesException.unkownOutputMode(outputMode))
       }
     })
@@ -55,11 +62,11 @@ object Configuration {
     val file = File.apply(path)
 
     if(!file.isRegularFile) Left(DonneesIncorrectesException.outputFileNotFound(path))
-    else fileFormat(config).flatMap(format => Right(FileConfigOutput(file, format)))
+    else outputFormat(config).flatMap(format => Right(FileConfigOutput(file, format)))
   }
 
-  private def fileFormat(config: Config): Either[DonneesIncorrectesException, OutputFormat] = {
-    val format = config.getString("file_output.format")
+  private def outputFormat(config: Config): Either[DonneesIncorrectesException, OutputFormat] = {
+    val format = config.getString("app.output_format")
     format.toUpperCase.trim match {
       case "JSON" => Right(JSON)
       case "CSV" => Right(CSV)
