@@ -12,6 +12,7 @@ class ConfigurationTest extends AnyFunSuite with EitherValues {
     """app {
       |  input_mode = "%s"
       |  output_mode = "%s"
+      |  output_format = "%s"
       |}
       |
       |file_input {
@@ -20,7 +21,6 @@ class ConfigurationTest extends AnyFunSuite with EitherValues {
       |
       |file_output {
       |  path = "%s"
-      |  format = "%s"
       |}""".stripMargin
 
   @SuppressWarnings(Array("org.wartremover.warts.Throw"))
@@ -46,9 +46,9 @@ class ConfigurationTest extends AnyFunSuite with EitherValues {
     val configOverride = configTemplate.format(
       "file",
       "file",
+      "csv",
       "src/test/resources/progfun/input.test",
-      "src/test/resources/progfun/output.test",
-      "csv"
+      "src/test/resources/progfun/output.test"
     )
     val config = ConfigFactory.parseString(configOverride)
       .withFallback(ConfigFactory.load())
@@ -69,9 +69,9 @@ class ConfigurationTest extends AnyFunSuite with EitherValues {
       val configOverride = configTemplate.format(
         "file",
         "file",
+        format._1,
         "src/test/resources/progfun/input.test",
-        "src/test/resources/progfun/output.test",
-        format._1
+        "src/test/resources/progfun/output.test"
       )
       val config = ConfigFactory.parseString(configOverride)
         .withFallback(ConfigFactory.load())
@@ -88,10 +88,7 @@ class ConfigurationTest extends AnyFunSuite with EitherValues {
 
 
   test("should get left when missing app") {
-    val config = ConfigFactory.parseString("")
-      .withFallback(ConfigFactory.load())
-
-
+    val config = ConfigFactory.empty()
 
     assertResult("Configuration [app.input_mode] is missing.") {
       Configuration(config).left.value.getMessage

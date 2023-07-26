@@ -26,16 +26,10 @@ class FileMowLawnCommandReaderTest extends AnyFunSuite with EitherValues with Ma
   test("should not get non existing file") {
     val e = FileMowLawnCommandReader.read(File(" non_existing.file ")).left.value
     e shouldBe a[DonneesIncorrectesException]
-    e.getMessage should be(
-      "[/Users/theo/dev/4AL/Scala/projet/funprog-al/ non_existing.file ] not found."
-    )
   }
 
   test("and a directory ?") {
     val e = FileMowLawnCommandReader.read(File("src")).left.value
     e shouldBe a[DonneesIncorrectesException]
-    e.getMessage should be(
-      "[/Users/theo/dev/4AL/Scala/projet/funprog-al/src] not found."
-    )
   }
 }

@@ -10,42 +10,31 @@ import progfun.out.CliWriter
 
 import scala.io.StdIn
 
-@SuppressWarnings(Array("org.wartremover.warts.Throw"))
 object Main extends App {
-  val config = Configuration(ConfigFactory.load());
-  config match {
-    case Left(e) => throw e
-    case Right(configuration) => {
-      val reader = configuration.input match {
-        case FileConfigInput(file) => FileMowLawnCommandReader.read(file)
-        case CliConfigInput() => CliMowLawnCommandReader.read(StdIn)
-      }
+  val out = Configuration(ConfigFactory.load())
+    .flatMap(configuration =>
+    {
+      val command = configuration.input match {
+      case FileConfigInput(file) => FileMowLawnCommandReader.read(file)
+      case CliConfigInput() => CliMowLawnCommandReader.read(StdIn)
+    }
 
-      val writer = configuration.output match {
-        case FileConfigOutput(file, format) => {
-          val serializer = LawnMowedResultSerializerFactory(format)
-          new FileWriter(serializer, file);
-        }
-        case CliConfigOutput(format) => {
-          new CliWriter(LawnMowedResultSerializerFactory(format))
-        }
-      }
+    val writer = configuration.output match {
+      case FileConfigOutput(file, format) => new FileWriter(LawnMowedResultSerializerFactory(format), file)
+      case CliConfigOutput(format) => new CliWriter(LawnMowedResultSerializerFactory(format))
+    }
 
       val app = new Application(writer)
+      for {
+        c <- command
+        result <- app.mowLawn(c)
+        writed <- writer.write(result)
+      } yield writed
 
-      val resultEither = reader match {
-        case Left(e) => throw e
-        case Right(command) => app.mowLawn(command)
-      }
+  });
 
-      val writed = resultEither match {
-        case Left(e) => throw e
-        case Right(result) => writer.write(result)
-      }
-
-      print(if (writed.isRight) "" else "")
-      ()
-    }
-  }
-
+  print(out match {
+    case Left(error) => error.getMessage
+    case Right(_) => ""
+  })
 }
